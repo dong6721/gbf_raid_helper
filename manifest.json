@@ -1,0 +1,28 @@
+{
+"manifest_version": 2,
+"name": "reRaid",
+"description": "Granblue fantasy raid search helper",
+"version": "1.0",
+"background": {
+	"page": "background.html"
+},
+"icons": {
+"128":"128.png"
+},
+"content_scripts": [
+	{
+	"js":["jquery-3.5.0.js"],
+	"matches":["<all_urls>"]
+}
+],
+"permissions": [
+	"clipboardRead",
+	"clipboardWrite",
+	"webRequest",
+	"tabs"
+],
+"browser_action": {
+          "default_title": "test",      
+          "default_popup": "popup.html"        
+        }
+}
