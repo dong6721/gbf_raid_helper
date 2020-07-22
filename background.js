@@ -1,3 +1,8 @@
+//set variable
+var source_domain = "http://game.granbluefantasy.jp";
+var uid = "";	//user-id
+var x_ver = "";	//x-version
+setversion();
 function ascii_to_char(str)
 {
 	var return_val="";
@@ -14,24 +19,11 @@ function ascii_to_char(str)
 	}
 	return return_val;
 }
-
-chrome.extension.onConnect.addListener(function(port) {
-	var code;
-	var source_domain = "http://game.granbluefantasy.jp";
-	port.onMessage.addListener(function(msg) {
-		code = msg;
-	});
-	
-	$(function() {
-		var uid;
-		var x_ver;	//x-version
-	var battle_key_check_domain = source_domain + "/quest/battle_key_check?_=" + Date.now() +"&t=" + Date.now() + "&uid=" + uid;	//사용자 정보
-	var bat_key = code;	//battle_key
-	//get X_ver
+function setversion()
+{
 	$.ajax({
 		url:source_domain,
 		type: "GET",
-		async:false,
 		success:function(result) {
 			//serarch game.version
 			var string_result = result;
@@ -44,9 +36,12 @@ chrome.extension.onConnect.addListener(function(port) {
 			//console.log(uid);
 		},
 		error:function(request,status,error){
-			alert("get X-version error!");
+			console.log("get X-version error!");
 		}
 	});
+}
+function getBattleKey(battle_key_check_domain,bat_key,port)
+{
 	$.ajax({
 		url: battle_key_check_domain,
 		type: "POST",
@@ -63,44 +58,89 @@ chrome.extension.onConnect.addListener(function(port) {
 		}),
 		success:function(result) {
 			port.postMessage(result);
+			if(result.popup != null)
+				return;
 			var string_redirect = result.redirect;
 			var url_array = string_redirect.split('/');
-			var battle_data_url = source_domain + "/quest/content/supporter_raid/" + url_array[2] + "/" + url_array[5] + "/0?_=" + Date.now() + "&t=" + Date.now() + "&uid=" + uid;
-			$.ajax({
-				url: battle_data_url,
-				dataType:"json",
-				contentType:"application/json",				
-				headers: {
-					'X-Requested-With' : 'XMLHttpRequest',
-					'X-VERSION' : x_ver
-				},				
-				success:function(result) {
-					//set json 
-					var post_msg = JSON.parse('{"img_enemy":"", "HP":""}');
-					//search raid data					
-					//raid_img search
-					var string_result = result.data;
-					var string_temp = string_result.substr(string_result.search("img-enemy"),200);
-					var img_enemy = string_temp.substr(0,string_temp.search(".png")+4);
-					img_enemy = img_enemy.substr(img_enemy.search("http"));
-					//HP search
-					string_temp = stringresult.substr(string_result.search("prt-raid-gauge-inner"),200);
-					var hp_enemy = string_temp.substr()
-
-					//set ascii to string
-					img_enemy = ascii_to_char(img_enemy);
-					post_msg.img_enemy = img_enemy;
-
-				},
-				error:function(request,status,errror){
-					alert("get supporter raid error!");
-				}
-			});
+			var battle_data_url = source_domain + "/quest/content/supporter_raid/" + url_array[2] + "/" + url_array[5] + "/0?_=" + Date.now() + "&t=" + Date.now() + "&uid=" + uid;			
+			
+			setEnemyData(battle_data_url,port);
 		},
 		error:function(request,status,error){
-			alert("get battle_key error!");
+			console.log("get battle_key error!");
+			setversion();
 		}
 	});
+}
+function setEnemyData(battle_data_url,port)
+{
+	$.ajax({
+			url: battle_data_url,
+			dataType:"json",
+			contentType:"application/json",				
+			headers: {
+				'X-Requested-With' : 'XMLHttpRequest',
+				'X-VERSION' : x_ver
+			},
+			success:function(result) {
+				//set json 
+				var post_msg = JSON.parse('{"img_enemy":"", "hp_enemy":""}');
+				//search raid data					
+				//raid_img search
+				var string_result = result.data;
+				var string_temp = string_result.substr(string_result.search("img-enemy"),200);
+				var img_enemy = string_temp.substr(0,string_temp.search(".png")+4);
+				img_enemy = img_enemy.substr(img_enemy.search("http"));
+				//HP search
+				string_temp = string_result.substr(string_result.search("prt-raid-gauge-inner"),200);
+				var hp_enemy = string_temp.substr(string_temp.search("width") + 11,2);
+					//set ascii to string
+				img_enemy = ascii_to_char(img_enemy);
+				post_msg.img_enemy = img_enemy;
+				post_msg.hp_enemy = hp_enemy;
+				port.postMessage(post_msg);
+			},
+			error:function(request,status,errror){
+				console.log("get supporter raid error!");
+				setversion();
+			}
+	});
+}
+function codeCheck(code)
+{
+	if(code.length == 8)
+	{
+		var re = /[A-Z0-9]/;
+		for(var i = 0;i<code.length;i++)
+		{
+			if(re.test(code[i]))
+				continue;
+			else
+				return false;
+		}
+	}
+	else
+		return false;
+	return true;
+}
+
+chrome.extension.onConnect.addListener(function(port) {
+	//popup on load
+	var multiCode = document.getElementById("multiCode");
+	multiCode.value="";
+	multiCode.focus();
+	document.execCommand('paste');
+	var code = multiCode.value;
+	code = code.replace(/(\s*)/g,"");	//replace empty space
+	if(!codeCheck(code))
+	{
+		//console.log("code incorrect");
+		return ;
+	}
+	$(function() {
+		var battle_key_check_domain = source_domain + "/quest/battle_key_check?_=" + Date.now() +"&t=" + Date.now() + "&uid=" + uid;	//사용자 정보
+		var bat_key = code;	//battle_key
+		getBattleKey(battle_key_check_domain,bat_key,port);	
 });
 
 	/*console.log("Connected...");*/

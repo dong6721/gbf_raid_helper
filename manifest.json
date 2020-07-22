@@ -19,7 +19,8 @@
 	"clipboardRead",
 	"clipboardWrite",
 	"webRequest",
-	"tabs"
+	"tabs",
+	"fontSettings"
 ],
 "browser_action": {
           "default_title": "test",      

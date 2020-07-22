@@ -2,19 +2,47 @@
 <html>
 
 <head>
-    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />    
     <style>
-        button {
-          height: 30px;
-          width: 100px;
-          outline: none;
+        body {          
+          height: 120px;
+          width:100px;
+          margin:0px;
+          padding:0px;
+          background-color:black;
         }
-      </style>
+        #img_enemy {
+          height:100px;
+          width:100px;          
+          margin:auto;
+        }
+        #gauge {
+          height:20px;
+          top:100px;
+          margin:auto;
+          position:absolute;
+          background:linear-gradient(#fbad97, #6f1904,#c2382f);
+          text-align:center;
+          font-size:100%;
+          color:white;
+        }
+        #raid_off{
+          display:none;
+        }
+        #raid_on {
+          display:none;
+        }
+    </style>
 </head>
-
 <body>
+  <div id="raid_off">
     <input id="multiCode" value="" onload='paste()' />
-    <input id='battle' type="button" value="battle" />
+  </div>
+
+  <div id="raid_on">
+    <img id="img_enemy" src=""/>
+    <div id="gauge" style="width: 0px"></div>
+  </div>
 </body>
 
 <script src="jquery-3.5.0.js"></script>
