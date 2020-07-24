@@ -58,7 +58,7 @@ function getBattleKey(battle_key_check_domain,bat_key,port)
 		}),
 		success:function(result) {
 			port.postMessage(result);
-			if(result.popup != null)
+			if(result.redirect == null)
 				return;
 			var string_redirect = result.redirect;
 			var url_array = string_redirect.split('/');
@@ -126,6 +126,15 @@ function codeCheck(code)
 
 chrome.extension.onConnect.addListener(function(port) {
 	//popup on load
+	if(uid=="0")
+	{
+		setversion();
+		if(uid == "0")
+		{
+			alert("need log-in granblue fantasy");
+			return ;
+		}	
+	}
 	var multiCode = document.getElementById("multiCode");
 	multiCode.value="";
 	multiCode.focus();

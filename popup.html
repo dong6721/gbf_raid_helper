@@ -5,12 +5,19 @@
     <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />    
     <style>
         body {          
-          height: 120px;
+          height:120px;
           width:100px;
           margin:0px;
           padding:0px;
           background-color:black;
+        }        
+        #raid_off{
+          display:none;
         }
+        #raid_on {
+          display:none;
+        }
+
         #img_enemy {
           height:100px;
           width:100px;          
@@ -18,20 +25,24 @@
         }
         #gauge {
           height:20px;
-          top:100px;
+          width:100%;
           margin:auto;
+          top:100px;
           position:absolute;
-          background:linear-gradient(#fbad97, #6f1904,#c2382f);
           text-align:center;
           font-size:100%;
           color:white;
+          background-color: rgba( 0,0,0, 0.0 );
+          z-index:1;
         }
-        #raid_off{
-          display:none;
+        #inner {
+          height:20px;
+          top:100px;
+          position:absolute;
+          background:linear-gradient(#fbad97, #6f1904,#c2382f);
+          margin:auto;
         }
-        #raid_on {
-          display:none;
-        }
+        
     </style>
 </head>
 <body>
@@ -41,7 +52,8 @@
 
   <div id="raid_on">
     <img id="img_enemy" src=""/>
-    <div id="gauge" style="width: 0px"></div>
+    <div id="gauge"></div>    
+    <div id="inner" style="width: 0%"></div>
   </div>
 </body>
 
