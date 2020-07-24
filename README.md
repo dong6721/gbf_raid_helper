@@ -2,3 +2,5 @@
 
 ### made by javascript & jquery
 -> operating by chrome extension
+
+need keyboard input
