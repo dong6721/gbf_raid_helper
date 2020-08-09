@@ -9,7 +9,7 @@
 This Program is get battle data and redirect to summon stone select page using multi code
 
 ### Install
-1. download source.zip
+1. download [source.zip](https://github.com/dong6721/gbf_raid_helper/archive/master.zip)
 1. go to this link ( chrome://extensions/ )
 1. Enable Developer Mode by clicking the toggle switch next to Developer mode
 1. click 'load unpacked' button and select this source file folder
