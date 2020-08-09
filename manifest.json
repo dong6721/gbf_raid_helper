@@ -1,8 +1,8 @@
 {
 "manifest_version": 2,
-"name": "reRaid",
+"name": "gbf_raid_helper",
 "description": "Granblue fantasy raid search helper",
-"version": "1.0",
+"version": "1.1",
 "background": {
 	"page": "background.html"
 },
@@ -29,7 +29,7 @@
 	"activeTab"
 ],
 "browser_action": {
-          "default_title": "test",      
+          "default_title": "gbf_raid_helper",      
           "default_popup": "popup.html"        
         }
 }
