@@ -15,25 +15,18 @@ var port = chrome.extension.connect ({
 			document.getElementById("gauge").innerHTML = msg.hp_enemy + "%";
 			document.getElementById("inner").style.width = msg.hp_enemy +'%';
 		}
-		else if(msg.popup != null)
-		{
-			//full people or ended battle
-			//document.getElementById("raid_off").style.display='block';
-			alert(msg.popup.body);
-		}
 		else
 		{
 			console.log("msg-error!");
 			console.log(msg);
 		}
 	});
-
 window.onload=function(){
 	var multiCode = document.getElementById("multiCode");
 	multiCode.value = "";
 	multiCode.focus();
 	document.execCommand('paste');
-	var code = multiCode.value;	
+	var code = multiCode.value;
 }
 
 document.getElementById('img_enemy').addEventListener('click',function(event){				

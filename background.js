@@ -2,6 +2,7 @@
 var source_domain = "http://game.granbluefantasy.jp";
 var uid = "";	//user-id
 var x_ver = "";	//x-version
+var redirected_address ="http://game.granbluefantasy.jp/";
 setversion();
 function ascii_to_char(str)
 {
@@ -40,7 +41,7 @@ function setversion()
 		}
 	});
 }
-function getBattleKey(battle_key_check_domain,bat_key,port)
+function getBattleKey(battle_key_check_domain,bat_key,port,mode)
 {
 	$.ajax({
 		url: battle_key_check_domain,
@@ -59,12 +60,23 @@ function getBattleKey(battle_key_check_domain,bat_key,port)
 		success:function(result) {
 			port.postMessage(result);
 			if(result.redirect == null)
+			{
+				//seed 부족, 인원 꽉참, 시간지남, battle 사라짐 등등 기타상화들				
+				console.log(result);
+				alert(result.popup.body);
 				return;
+			}
 			var string_redirect = result.redirect;
 			var url_array = string_redirect.split('/');
 			var battle_data_url = source_domain + "/quest/content/supporter_raid/" + url_array[2] + "/" + url_array[5] + "/0?_=" + Date.now() + "&t=" + Date.now() + "&uid=" + uid;			
-			
-			setEnemyData(battle_data_url,port);
+			if(mode == 'popup')
+			{
+				setEnemyData(battle_data_url,port);	
+			}				
+			else
+			{
+				chrome.tabs.update({url: redirected_address + result.redirect});
+			}
 		},
 		error:function(request,status,error){
 			console.log("get battle_key error!");
@@ -110,7 +122,7 @@ function codeCheck(code)
 {
 	if(code.length == 8)
 	{
-		var re = /[A-Z0-9]/;
+		var re = /[A-Z0-9a-z]/;
 		for(var i = 0;i<code.length;i++)
 		{
 			if(re.test(code[i]))
@@ -124,7 +136,8 @@ function codeCheck(code)
 	return true;
 }
 
-chrome.extension.onConnect.addListener(function(port) {
+function connect(port,mode)
+{
 	//popup on load
 	if(uid=="0")
 	{
@@ -133,7 +146,7 @@ chrome.extension.onConnect.addListener(function(port) {
 		{
 			alert("need log-in granblue fantasy");
 			return ;
-		}	
+		}
 	}
 	var multiCode = document.getElementById("multiCode");
 	multiCode.value="";
@@ -146,17 +159,31 @@ chrome.extension.onConnect.addListener(function(port) {
 		//console.log("code incorrect");
 		return ;
 	}
-	$(function() {
-		var battle_key_check_domain = source_domain + "/quest/battle_key_check?_=" + Date.now() +"&t=" + Date.now() + "&uid=" + uid;	//사용자 정보
-		var bat_key = code;	//battle_key
-		getBattleKey(battle_key_check_domain,bat_key,port);	
-});
+	var battle_key_check_domain = source_domain + "/quest/battle_key_check?_=" + Date.now() +"&t=" + Date.now() + "&uid=" + uid;	//사용자 정보
+	var bat_key = code;	//battle_key
+	getBattleKey(battle_key_check_domain,bat_key,port,mode);	
+}
 
+chrome.extension.onConnect.addListener(function(port) {	
+	if(port.name == 'content_script')
+	{
+		port.onMessage.addListener(function(msg){
+			//F7 button click
+			console.log("msg received :",msg);
+			connect(port,'shortcut');
+		});
+		return;
+	}
+	connect(port,'popup');
 	/*console.log("Connected...");*/
 	/*port.onMessage.addListener(function(msg){
 		console.log("message received" + msg);
 		port.postMessage("Hi popup.js");
 	});*/
 })
+
+
+
+
 
 
